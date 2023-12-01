@@ -24,11 +24,11 @@ const rateFilter = (req, res, next) => {
 const dateFilter = (req, res, next) => {
   const { date } = req.query;
   const { data } = req.body;
-   
+
   if (date === undefined || date.trim() === '') {
     next();
   }
-   
+
   if (!DATE_REGEX.test(date)) {
     return res.status(400).json({ message: 'O parâmetro "date" deve ter o formato "dd/mm/aaaa"' });
   }
@@ -37,7 +37,19 @@ const dateFilter = (req, res, next) => {
   next();
 };
 
+const nameFilter = (req, res) => {
+  const { q } = req.query;
+  const { data } = req.body;
+
+  if (!q) return res.status(200).json(data);
+
+  const searchedData = data.filter(({ name }) => name.toLowerCase().includes(q.toLowerCase()));
+
+  return res.status(200).json(searchedData);
+};
+
 module.exports = {
   rateFilter,
   dateFilter,
+  nameFilter,
 };

@@ -3,7 +3,8 @@ const talkerDB = require('../db/talkerDB');
 const utils = require('../utils/utils');
 const postValidators = require('../middlewares/postValidators');
 const validateToken = require('../middlewares/auth');
-const { rateFilter, dateFilter } = require('../middlewares/queryFilters');
+const validateRate = require('../middlewares/rateValitor');
+const { rateFilter, dateFilter, nameFilter } = require('../middlewares/queryFilters');
 
 const router = Router();
 
@@ -22,16 +23,7 @@ router.get('/db', async (_req, res) => {
   }
 });
 
-router.get('/search', validateToken, rateFilter, dateFilter, (req, res) => {
-  const { q } = req.query;
-  const { data } = req.body;
-
-  if (!q) return res.status(200).json(data);
-
-  const searchedData = data.filter(({ name }) => name.toLowerCase().includes(q.toLowerCase()));
-
-  return res.status(200).json(searchedData);
-});
+router.get('/search', validateToken, rateFilter, dateFilter, nameFilter);
 
 router.get('/:id', (req, res) => {
   const { id } = req.params;
@@ -70,6 +62,20 @@ router.put('/:id', validateToken, postValidators, (req, res) => {
 
   utils.writeToTalkersList(editedData);
   return res.status(200).json({ id: idNumber, ...req.body });
+});
+
+router.patch('/rate/:id', validateToken, validateRate, (req, res) => {
+  const { id } = req.params;
+  const { rate } = req.body;
+  const data = utils.readTalkersList();
+  const editedData = data.reduce((acc, currTalker) => {
+    if (currTalker.id === +id) {
+      return [...acc, { ...currTalker, talk: { ...currTalker.talk, rate } }];
+    }
+    return [...acc, currTalker];
+  }, []);
+  utils.writeToTalkersList(editedData);
+  return res.status(204).end();
 });
 
 router.delete('/:id', validateToken, (req, res) => {
