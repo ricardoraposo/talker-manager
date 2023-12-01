@@ -38,4 +38,22 @@ router.post('/', validateToken, postValidators, (req, res) => {
   return res.status(201).json(newTalker);
 });
 
+router.put('/:id', validateToken, postValidators, (req, res) => {
+  const { id } = req.params;
+  const idNumber = parseInt(id, 10);
+  console.log('id: ', idNumber);
+  const data = utils.readTalkersList();
+
+  const talker = data.find((t) => t.id === idNumber);
+  if (!talker) res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
+
+  const editedData = data.reduce((acc, currTalker) => {
+    if (currTalker.id === idNumber) return [...acc, { id: idNumber, ...req.body }];
+    return [...acc, currTalker];
+  }, []);
+
+  utils.writeToTalkersList(editedData);
+  return res.status(200).json({ id: idNumber, ...req.body });
+});
+
 module.exports = router;
