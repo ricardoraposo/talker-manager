@@ -21,6 +21,17 @@ router.get('/db', async (_req, res) => {
   }
 });
 
+router.get('/search', validateToken, (req, res) => {
+  const { q } = req.query;
+  const data = utils.readTalkersList();
+
+  if (!q) return res.status(200).json(data);
+
+  const searchedData = data.filter(({ name }) => name.toLowerCase().includes(q.toLowerCase()));
+
+  return res.status(200).json(searchedData);
+});
+
 router.get('/:id', (req, res) => {
   const { id } = req.params;
   const data = utils.readTalkersList();
