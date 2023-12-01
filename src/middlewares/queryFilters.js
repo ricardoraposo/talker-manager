@@ -48,8 +48,6 @@ const nameFilter = (req, res) => {
   return res.status(200).json(searchedData);
 };
 
-module.exports = {
-  rateFilter,
-  dateFilter,
-  nameFilter,
-};
+const queryFilters = [rateFilter, dateFilter, nameFilter];
+
+module.exports = queryFilters;
