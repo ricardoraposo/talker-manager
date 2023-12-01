@@ -1,8 +1,14 @@
 const { Router } = require('express');
 const talkerDB = require('../db/talkerDB');
 const utils = require('../utils/utils');
+const { PATH_TO_TALKERS } = require('../utils/consts');
 
 const router = Router();
+
+router.get('/', (_req, res) => {
+  const data = utils.readJsonFile(PATH_TO_TALKERS);
+  res.status(200).json(data);
+});
 
 router.get('/db', async (_req, res) => {
   try {
