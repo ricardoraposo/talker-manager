@@ -1,4 +1,5 @@
 const utils = require('../utils/utils');
+const { DATE_REGEX } = require('../utils/consts');
 
 const rateFilter = (req, res, next) => {
   const { rate } = req.query;
@@ -20,6 +21,23 @@ const rateFilter = (req, res, next) => {
   next();
 };
 
+const dateFilter = (req, res, next) => {
+  const { date } = req.query;
+  const { data } = req.body;
+   
+  if (date === undefined || date.trim() === '') {
+    next();
+  }
+   
+  if (!DATE_REGEX.test(date)) {
+    return res.status(400).json({ message: 'O parâmetro "date" deve ter o formato "dd/mm/aaaa"' });
+  }
+
+  req.body.data = data.filter(({ talk }) => talk.watchedAt === date);
+  next();
+};
+
 module.exports = {
   rateFilter,
+  dateFilter,
 };

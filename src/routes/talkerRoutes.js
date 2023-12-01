@@ -3,7 +3,7 @@ const talkerDB = require('../db/talkerDB');
 const utils = require('../utils/utils');
 const postValidators = require('../middlewares/postValidators');
 const validateToken = require('../middlewares/auth');
-const { rateFilter } = require('../middlewares/queryFilters');
+const { rateFilter, dateFilter } = require('../middlewares/queryFilters');
 
 const router = Router();
 
@@ -22,7 +22,7 @@ router.get('/db', async (_req, res) => {
   }
 });
 
-router.get('/search', validateToken, rateFilter, (req, res) => {
+router.get('/search', validateToken, rateFilter, dateFilter, (req, res) => {
   const { q } = req.query;
   const { data } = req.body;
 
