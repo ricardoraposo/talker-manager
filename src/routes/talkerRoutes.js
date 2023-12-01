@@ -24,24 +24,28 @@ router.get('/db', async (_req, res) => {
 router.get('/:id', (req, res) => {
   const { id } = req.params;
   const data = utils.readTalkersList();
+
   const talker = data.find((t) => t.id === parseInt(id, 10));
   if (!talker) return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
+
   return res.status(200).json(talker);
 });
 
 router.post('/', validateToken, postValidators, (req, res) => {
   const talker = req.body;
   const data = utils.readTalkersList();
+
   const newTalker = { id: data.length + 1, ...talker };
+
   data.push(newTalker);
   utils.writeToTalkersList(data);
+
   return res.status(201).json(newTalker);
 });
 
 router.put('/:id', validateToken, postValidators, (req, res) => {
   const { id } = req.params;
   const idNumber = parseInt(id, 10);
-  console.log('id: ', idNumber);
   const data = utils.readTalkersList();
 
   const talker = data.find((t) => t.id === idNumber);
@@ -54,6 +58,18 @@ router.put('/:id', validateToken, postValidators, (req, res) => {
 
   utils.writeToTalkersList(editedData);
   return res.status(200).json({ id: idNumber, ...req.body });
+});
+
+router.delete('/:id', validateToken, (req, res) => {
+  const { id } = req.params;
+  const idNumber = parseInt(id, 10);
+  const data = utils.readTalkersList();
+
+  const newData = data.filter((d) => d.id !== idNumber);
+
+  utils.writeToTalkersList(newData);
+
+  res.status(204).end();
 });
 
 module.exports = router;
