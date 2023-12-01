@@ -7,7 +7,15 @@ const router = Router();
 
 router.get('/', (_req, res) => {
   const data = utils.readJsonFile(PATH_TO_TALKERS);
-  res.status(200).json(data);
+  return res.status(200).json(data);
+});
+
+router.get('/:id', (req, res) => {
+  const { id } = req.params;
+  const data = utils.readJsonFile(PATH_TO_TALKERS);
+  const talker = data.find((t) => t.id === parseInt(id, 10));
+  if (!talker) return res.status(404).json({ message: 'Pessoa palestrante não encontrada' });
+  return res.status(200).json(talker);
 });
 
 router.get('/db', async (_req, res) => {
